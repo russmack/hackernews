@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"private/russmack/hackernews"
+	"github.com/russmack/hackernews"
 )
 
 func main() {

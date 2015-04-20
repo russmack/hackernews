@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/russmack/hackernews/types"
 	"io/ioutil"
 	"net/http"
-	"private/russmack/hackernews/types"
 )
 
 const (
