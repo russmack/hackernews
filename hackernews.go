@@ -1,10 +1,10 @@
+// Package hackernews is a HackerNews api client.
 package hackernews
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/russmack/hackernews/types"
 	"io/ioutil"
 	"net/http"
 )
@@ -19,20 +19,17 @@ const (
 	EndpointUser       string = "https://hacker-news.firebaseio.com/v0/user/%s.json?print=pretty"
 )
 
-type Client struct {
-}
+// Client is the api client.
+type Client struct{}
 
-var ()
-
-func init() {
-}
-
+// NewClient returns a new api Client client.
 func NewClient() *Client {
 	return &Client{}
 }
 
-func (c *Client) unmarshalItem(jsonItem string) (*types.Item, error) {
-	item := new(types.Item)
+// unmarshalItem retuns a HackerNews Item, given the json.
+func (c *Client) unmarshalItem(jsonItem string) (*Item, error) {
+	item := new(Item)
 	err := json.Unmarshal([]byte(jsonItem), &item)
 	if err != nil {
 		fmt.Println("Error unmarshalling item.")
@@ -41,6 +38,7 @@ func (c *Client) unmarshalItem(jsonItem string) (*types.Item, error) {
 	return item, nil
 }
 
+// GetTopStories returns the ids of the top stories.
 func (c *Client) GetTopStories() ([]int, error) {
 	jsonRes, err := c.getUrl(EndpointTopStories)
 	if err != nil {
@@ -55,7 +53,8 @@ func (c *Client) GetTopStories() ([]int, error) {
 	return stories, nil
 }
 
-func (c *Client) GetItem(id int) (*types.Item, error) {
+// GetItem returns the Item specified by the id.
+func (c *Client) GetItem(id int) (*Item, error) {
 	itemUrl := fmt.Sprintf(EndpointItem, id)
 	jsonRes, err := c.getUrl(itemUrl)
 	if err != nil {
@@ -65,6 +64,7 @@ func (c *Client) GetItem(id int) (*types.Item, error) {
 	return c.unmarshalItem(jsonRes)
 }
 
+// getUrl is the http client which requests a given endpoint and returns the response.
 func (c *Client) getUrl(url string) (string, error) {
 	fmt.Println("Getting url:", url)
 	client := http.Client{}

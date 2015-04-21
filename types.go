@@ -1,14 +1,4 @@
-package types
-
-import ()
-
-type Endpoints struct {
-	TopStories  string
-	NewStories  string
-	AskStories  string
-	ShowStories string
-	JobStories  string
-}
+package hackernews
 
 type Item struct {
 	Id          int    `json:"id"`
