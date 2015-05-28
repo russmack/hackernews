@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"time"
 )
 
 const (
@@ -32,7 +34,7 @@ func (c *Client) unmarshalItem(jsonItem string) (*Item, error) {
 	item := new(Item)
 	err := json.Unmarshal([]byte(jsonItem), &item)
 	if err != nil {
-		fmt.Println("Error unmarshalling item.")
+		log.Println("Error calling json.Unmarshal from unmarshalItem.")
 		return nil, err
 	}
 	return item, nil
@@ -42,12 +44,13 @@ func (c *Client) unmarshalItem(jsonItem string) (*Item, error) {
 func (c *Client) GetTopStories() ([]int, error) {
 	jsonRes, err := c.getUrl(EndpointTopStories)
 	if err != nil {
-		fmt.Println("Err:", err)
+		log.Println("Err calling getUrl from GetTopStories.")
 		return nil, err
 	}
 	stories := make([]int, 0)
 	err = json.Unmarshal([]byte(jsonRes), &stories)
 	if err != nil {
+		log.Println("Err calling json.Unmarshal from GetTopStories.")
 		return nil, err
 	}
 	return stories, nil
@@ -58,7 +61,7 @@ func (c *Client) GetItem(id int) (*Item, error) {
 	itemUrl := fmt.Sprintf(EndpointItem, id)
 	jsonRes, err := c.getUrl(itemUrl)
 	if err != nil {
-		fmt.Println("Error getting item.")
+		log.Println("Err calling getUrl form GetItem.")
 		return nil, err
 	}
 	return c.unmarshalItem(jsonRes)
@@ -66,14 +69,22 @@ func (c *Client) GetItem(id int) (*Item, error) {
 
 // getUrl is the http client which requests a given endpoint and returns the response.
 func (c *Client) getUrl(url string) (string, error) {
-	fmt.Println("Getting url:", url)
-	client := http.Client{}
+	tr := &http.Transport{
+		TLSHandshakeTimeout: 20 * time.Second,
+	}
+	client := &http.Client{Transport: tr}
+	//client := http.Client{}
+	log.Println("Getting:", url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
+		log.Println("Err in http.NewRequest.")
 		return "", err
 	}
+	req.Header.Add("Accept-Encoding", "identity")
+	req.Close = true
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println("Err in client.Do.")
 		return "", err
 	}
 	defer resp.Body.Close()
@@ -84,6 +95,7 @@ func (c *Client) getUrl(url string) (string, error) {
 	body := []byte{}
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
+		log.Println("Err in ioutil.ReadAll.")
 		return "", err
 	}
 	return string(body), nil
