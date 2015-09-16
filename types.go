@@ -2,7 +2,7 @@ package hackernews
 
 type Item struct {
 	Id          int    `json:"id"`
-	Deleted     string `json:"deleted"`
+	Deleted     bool   `json:"deleted"`
 	Text        string `json:"text"`
 	Dead        string `json:"dead"`
 	Parent      int    `json:"parent"`
