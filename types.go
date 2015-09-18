@@ -4,7 +4,7 @@ type Item struct {
 	Id          int    `json:"id"`
 	Deleted     bool   `json:"deleted"`
 	Text        string `json:"text"`
-	Dead        string `json:"dead"`
+	Dead        bool   `json:"dead"`
 	Parent      int    `json:"parent"`
 	Score       int    `json:"score"`
 	Time        int    `json:"time"`
